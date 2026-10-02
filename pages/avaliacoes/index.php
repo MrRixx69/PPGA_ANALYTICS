@@ -78,6 +78,11 @@ $anoFiltro =
         ? (int) $_GET['ano']
         : 0;
 
+$periodicoFiltro =
+    isset($_GET['periodico'])
+        ? (int) $_GET['periodico']
+        : 0;
+
 $classificacaoFiltro =
     isset($_GET['classificacao'])
         ? (int) $_GET['classificacao']
@@ -123,6 +128,26 @@ $stmt = $pdo->query("
 $anos =
     $stmt->fetchAll(
         PDO::FETCH_COLUMN
+    );
+
+
+// ========================================================
+// PERIÓDICOS PARA O FILTRO
+// ========================================================
+
+$stmt = $pdo->query("
+    SELECT DISTINCT
+        pe.id,
+        pe.nome
+    FROM periodicos pe
+    INNER JOIN producoes p
+        ON p.periodico_id = pe.id
+    ORDER BY pe.nome
+");
+
+$periodicos =
+    $stmt->fetchAll(
+        PDO::FETCH_ASSOC
     );
 
 
@@ -202,6 +227,19 @@ if ($anoFiltro > 0) {
     $parametros[
         ':ano'
     ] = $anoFiltro;
+}
+
+
+// PERIÓDICO
+
+if ($periodicoFiltro > 0) {
+
+    $where[] =
+        "p.periodico_id = :periodico_id";
+
+    $parametros[
+        ':periodico_id'
+    ] = $periodicoFiltro;
 }
 
 
@@ -353,6 +391,9 @@ $sqlProducoes = "
         tp.nome
             AS tipo_producao,
 
+        pe.nome
+            AS periodico,
+
         ap.id
             AS avaliacao_id,
 
@@ -393,6 +434,10 @@ $sqlProducoes = "
     LEFT JOIN tipos_producao tp
         ON tp.id =
             p.tipo_producao_id
+
+    LEFT JOIN periodicos pe
+        ON pe.id =
+            p.periodico_id
 
     LEFT JOIN avaliacoes_producao ap
         ON ap.producao_id =
@@ -613,6 +658,45 @@ $producoes =
 
                             <?= (int) $ano ?>
 
+                        </option>
+
+                    <?php endforeach; ?>
+
+                </select>
+
+            </div>
+
+
+            <!-- PERIÓDICO -->
+
+            <div class="campo campo-periodico">
+
+                <label for="periodico">
+                    Periódico
+                </label>
+
+                <select
+                    name="periodico"
+                    id="periodico"
+                >
+
+                    <option value="0">
+                        Todos
+                    </option>
+
+                    <?php foreach (
+                        $periodicos
+                        as $periodico
+                    ): ?>
+
+                        <option
+                            value="<?= (int) $periodico['id'] ?>"
+                            <?= $periodicoFiltro === (int) $periodico['id']
+                                ? 'selected'
+                                : ''
+                            ?>
+                        >
+                            <?= e($periodico['nome']) ?>
                         </option>
 
                     <?php endforeach; ?>
@@ -855,6 +939,10 @@ $producoes =
                     </th>
 
                     <th>
+                        Periódico
+                    </th>
+
+                    <th>
                         Ano
                     </th>
 
@@ -887,7 +975,7 @@ $producoes =
                 <tr>
 
                     <td
-                        colspan="8"
+                        colspan="9"
                         class="sem-dados"
                     >
                         Nenhuma produção encontrada.
@@ -944,6 +1032,19 @@ $producoes =
                             <?= e(
                                 $producao[
                                     'tipo_producao'
+                                ]
+                                ??
+                                'Não informado'
+                            ) ?>
+
+                        </td>
+
+
+                        <td class="periodico-col">
+
+                            <?= e(
+                                $producao[
+                                    'periodico'
                                 ]
                                 ??
                                 'Não informado'

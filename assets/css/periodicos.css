@@ -612,3 +612,193 @@ tbody tr:last-child td {
         flex-direction: column-reverse;
     }
 }
+/* ========================================================
+   CAPES ÁREA 27 - INDICADORES DE PERIÓDICOS
+   ======================================================== */
+
+.resultado-area27 {
+    min-width: 170px;
+    padding: 14px 16px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    background: #f8fafc;
+    text-align: right;
+}
+
+.resultado-area27 span,
+.resultado-area27 small {
+    display: block;
+    color: var(--texto-secundario);
+    font-size: 12px;
+}
+
+.resultado-area27 strong {
+    display: block;
+    margin: 3px 0;
+    color: #14213d;
+    font-size: 28px;
+    line-height: 1.1;
+}
+
+.indicadores-form {
+    padding: 0 20px 22px;
+}
+
+.indicadores-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.indicador-card {
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid var(--borda);
+    border-radius: 11px;
+    background: #fbfcfd;
+}
+
+.indicador-card-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding-bottom: 13px;
+    border-bottom: 1px solid var(--borda);
+}
+
+.indicador-base {
+    display: block;
+    color: #14213d;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.indicador-card-topo small {
+    display: block;
+    margin-top: 4px;
+    color: var(--texto-secundario);
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.indicador-status-resumo {
+    flex: 0 0 auto;
+    min-width: 38px;
+    padding: 7px 9px;
+    border-radius: 999px;
+    background: #eef2f7;
+    color: #14213d;
+    font-size: 12px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.indicador-campos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.indicador-campos-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.indicador-card select,
+.indicador-card input {
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    padding: 9px 10px;
+    border: 1px solid var(--borda-forte);
+    border-radius: 7px;
+    background: white;
+    color: var(--texto);
+    font: inherit;
+    font-size: 13px;
+}
+
+.indicador-card select:focus,
+.indicador-card input:focus {
+    outline: none;
+    border-color: #6b7280;
+    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.10);
+}
+
+.indicador-evidencia {
+    display: grid;
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed #d1d5db;
+}
+
+.indicadores-actions {
+    margin-top: 20px;
+}
+
+.nota-alerta {
+    margin: 0 20px 20px;
+    border-color: #fde68a;
+    background: #fffbeb;
+    color: #92400e;
+}
+
+.tag-atual {
+    display: inline-flex;
+    padding: 5px 8px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #166534;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.tabela-historico-indicadores table {
+    min-width: 1050px;
+}
+
+.classe-capes {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    padding: 5px 8px;
+    border-radius: 999px;
+    background: #eef2f7;
+    color: #14213d;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.fonte-determinante {
+    display: block;
+    margin-top: 5px;
+    color: var(--texto-suave);
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.pontos-capes {
+    color: #14213d;
+    font-size: 16px;
+}
+
+@media (max-width: 1050px) {
+    .indicadores-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .resultado-area27 {
+        width: 100%;
+        text-align: left;
+    }
+
+    .indicador-campos,
+    .indicador-campos-3 {
+        grid-template-columns: 1fr;
+    }
+}

@@ -403,3 +403,181 @@ tbody tr:hover {
         flex: 1 1 130px;
     }
 }
+
+/* ========================================================
+   CAPES ÁREA 27 - CÁLCULO PRELIMINAR
+   ======================================================== */
+
+.periodico-col {
+    min-width: 220px;
+}
+
+.calculo-area27-painel {
+    overflow: hidden;
+}
+
+.calculo-area27-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.rotulo-secao {
+    display: block;
+    margin-bottom: 5px;
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.calculo-area27-cabecalho h2 {
+    margin: 0;
+    color: #14213d;
+    font-size: 30px;
+}
+
+.calculo-area27-cabecalho p {
+    margin: 7px 0 0;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.calculo-area27-pontos {
+    min-width: 180px;
+    padding: 14px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f8fafc;
+    text-align: right;
+}
+
+.calculo-area27-pontos span {
+    display: block;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.calculo-area27-pontos strong {
+    display: block;
+    margin-top: 4px;
+    color: #14213d;
+    font-size: 24px;
+}
+
+.evidencias-area27 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.evidencia-area27 {
+    min-width: 0;
+    padding: 13px;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    background: #fbfcfd;
+}
+
+.evidencia-base {
+    display: block;
+    margin-bottom: 6px;
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.evidencia-area27 strong {
+    display: block;
+    color: #14213d;
+    font-size: 16px;
+}
+
+.evidencia-area27 small {
+    display: block;
+    margin-top: 5px;
+    color: #6b7280;
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.calculo-ajuste,
+.calculo-aviso,
+.calculo-pendencias {
+    margin-top: 15px;
+    padding: 13px 15px;
+    border-radius: 9px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.calculo-ajuste {
+    border: 1px solid #bfdbfe;
+    background: #eff6ff;
+    color: #1e3a8a;
+}
+
+.calculo-aviso,
+.calculo-pendencias {
+    border: 1px solid #fde68a;
+    background: #fffbeb;
+    color: #92400e;
+}
+
+.calculo-pendencias ul {
+    margin: 8px 0 0;
+    padding-left: 18px;
+}
+
+.calculo-acoes {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.ajuda-campo {
+    display: block;
+    margin-top: 7px;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+@media (max-width: 850px) {
+    .calculo-area27-cabecalho {
+        flex-direction: column;
+    }
+
+    .calculo-area27-pontos {
+        width: 100%;
+        text-align: left;
+    }
+
+    .evidencias-area27 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .evidencias-area27 {
+        grid-template-columns: 1fr;
+    }
+
+    .calculo-acoes,
+    .calculo-acoes .botao {
+        width: 100%;
+    }
+}

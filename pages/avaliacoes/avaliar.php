@@ -16,6 +16,13 @@ require_once
     . DIRECTORY_SEPARATOR
     . 'conexao.php';
 
+require_once
+    $raizProjeto
+    . DIRECTORY_SEPARATOR
+    . 'includes'
+    . DIRECTORY_SEPARATOR
+    . 'capes_area27.php';
+
 
 // ========================================================
 // FUNÇÃO PARA ESCAPAR HTML
@@ -78,12 +85,19 @@ $stmtProducao =
             p.ano,
             p.doi,
             p.issn,
+            p.periodico_id,
 
             tp.nome
                 AS tipo_producao,
 
             pe.nome
                 AS periodico,
+
+            pe.issn
+                AS periodico_issn,
+
+            pe.eissn
+                AS periodico_eissn,
 
             (
                 SELECT
@@ -212,6 +226,87 @@ $classificacoes =
     );
 
 
+$classificacoesPorCodigo = [];
+
+foreach ($classificacoes as $classificacao) {
+
+    $classificacoesPorCodigo[
+        strtoupper(
+            (string) $classificacao['codigo']
+        )
+    ] = $classificacao;
+}
+
+
+$estruturaArea27Disponivel =
+    tabelaExisteCapes(
+        $pdo,
+        'periodicos_indicadores'
+    )
+    &&
+    colunaExisteCapes(
+        $pdo,
+        'avaliacoes_producao',
+        'classificacao_calculada_id'
+    );
+
+$indicadoresPeriodico = [];
+$calculoAutomatico =
+    calcularClassificacaoPeriodicoArea27([]);
+
+if (
+    $estruturaArea27Disponivel
+    &&
+    !empty($producao['periodico_id'])
+) {
+
+    $indicadoresPeriodico =
+        buscarIndicadoresAtuaisPeriodicoArea27(
+            $pdo,
+            (int) $producao['periodico_id']
+        );
+
+    $calculoAutomatico =
+        calcularClassificacaoPeriodicoArea27(
+            $indicadoresPeriodico
+        );
+}
+
+$classificacaoCalculadaId = null;
+$classeAntesAjusteId = null;
+$pontosCalculadosQuadrienio = null;
+
+if (!empty($calculoAutomatico['classe_final'])) {
+
+    $codigoFinal =
+        strtoupper(
+            (string) $calculoAutomatico['classe_final']
+        );
+
+    if (isset($classificacoesPorCodigo[$codigoFinal])) {
+
+        $classificacaoCalculadaId =
+            (int) $classificacoesPorCodigo[$codigoFinal]['id'];
+
+        $pontosCalculadosQuadrienio =
+            (float) $classificacoesPorCodigo[$codigoFinal]['pontos'];
+    }
+}
+
+if (!empty($calculoAutomatico['classe_antes_ajuste'])) {
+
+    $codigoAntes =
+        strtoupper(
+            (string) $calculoAutomatico['classe_antes_ajuste']
+        );
+
+    if (isset($classificacoesPorCodigo[$codigoAntes])) {
+        $classeAntesAjusteId =
+            (int) $classificacoesPorCodigo[$codigoAntes]['id'];
+    }
+}
+
+
 if (
     count(
         $classificacoes
@@ -282,6 +377,15 @@ $observacao =
         'observacao'
     ]
     ?? '';
+
+if (
+    !$avaliacao
+    &&
+    $classificacaoCalculadaId !== null
+) {
+    $classificacaoSelecionada =
+        $classificacaoCalculadaId;
+}
 
 $mensagemErro = '';
 
@@ -377,6 +481,33 @@ if (
                 'pontos'
             ];
 
+        if (
+            $classificacaoCalculadaId !== null
+            &&
+            $classificacaoSelecionada !== $classificacaoCalculadaId
+            &&
+            $observacao === ''
+        ) {
+
+            $mensagemErro =
+                'A classificação confirmada difere do cálculo preliminar. '
+                . 'Informe uma justificativa na observação.';
+        }
+
+        elseif (
+            $classificacaoCalculadaId === null
+            &&
+            strtoupper((string) $dadosPontuacao['codigo']) !== 'NC'
+            &&
+            $observacao === ''
+        ) {
+
+            $mensagemErro =
+                'Não há classe preliminar comprovada para este periódico. '
+                . 'Informe uma justificativa para confirmar manualmente.';
+        }
+
+        else {
 
         try {
 
@@ -400,6 +531,12 @@ if (
                     (
                         producao_id,
                         quadrienio_id,
+                        regra_versao,
+                        classe_antes_ajuste_id,
+                        classificacao_calculada_id,
+                        ajuste_scielo,
+                        fonte_determinante,
+                        calculado_em,
                         classificacao_id,
                         pontuacao_interna,
                         status,
@@ -411,14 +548,38 @@ if (
                     (
                         :producao_id,
                         :quadrienio_id,
+                        :regra_versao,
+                        :classe_antes_ajuste_id,
+                        :classificacao_calculada_id,
+                        :ajuste_scielo,
+                        :fonte_determinante,
+                        :calculado_em,
                         :classificacao_id,
                         :pontuacao,
-                        'AVALIADO',
+                        'CONFIRMADO',
                         :observacao,
                         NOW()
                     )
 
                     ON DUPLICATE KEY UPDATE
+
+                        regra_versao =
+                            :regra_versao_update,
+
+                        classe_antes_ajuste_id =
+                            :classe_antes_ajuste_id_update,
+
+                        classificacao_calculada_id =
+                            :classificacao_calculada_id_update,
+
+                        ajuste_scielo =
+                            :ajuste_scielo_update,
+
+                        fonte_determinante =
+                            :fonte_determinante_update,
+
+                        calculado_em =
+                            :calculado_em_update,
 
                         classificacao_id =
                             :classificacao_id_update,
@@ -427,7 +588,7 @@ if (
                             :pontuacao_update,
 
                         status =
-                            'AVALIADO',
+                            'CONFIRMADO',
 
                         observacao =
                             :observacao_update,
@@ -444,6 +605,29 @@ if (
                 ':quadrienio_id' =>
                     $quadrienioId,
 
+                ':regra_versao' =>
+                    CAPES_AREA27_REGRA_VERSAO,
+
+                ':classe_antes_ajuste_id' =>
+                    $classeAntesAjusteId,
+
+                ':classificacao_calculada_id' =>
+                    $classificacaoCalculadaId,
+
+                ':ajuste_scielo' =>
+                    !empty($calculoAutomatico['ajuste_scielo'])
+                        ? 1
+                        : 0,
+
+                ':fonte_determinante' =>
+                    $calculoAutomatico['fonte_determinante']
+                    ?? null,
+
+                ':calculado_em' =>
+                    $classificacaoCalculadaId !== null
+                        ? date('Y-m-d H:i:s')
+                        : null,
+
                 ':classificacao_id' =>
                     $classificacaoSelecionada,
 
@@ -453,6 +637,29 @@ if (
                 ':observacao' =>
                     $observacao !== ''
                         ? $observacao
+                        : null,
+
+                ':regra_versao_update' =>
+                    CAPES_AREA27_REGRA_VERSAO,
+
+                ':classe_antes_ajuste_id_update' =>
+                    $classeAntesAjusteId,
+
+                ':classificacao_calculada_id_update' =>
+                    $classificacaoCalculadaId,
+
+                ':ajuste_scielo_update' =>
+                    !empty($calculoAutomatico['ajuste_scielo'])
+                        ? 1
+                        : 0,
+
+                ':fonte_determinante_update' =>
+                    $calculoAutomatico['fonte_determinante']
+                    ?? null,
+
+                ':calculado_em_update' =>
+                    $classificacaoCalculadaId !== null
+                        ? date('Y-m-d H:i:s')
                         : null,
 
                 ':classificacao_id_update' =>
@@ -496,6 +703,7 @@ if (
             $mensagemErro =
                 'Erro ao salvar avaliação: '
                 . $erro->getMessage();
+        }
         }
     }
 }
@@ -584,6 +792,18 @@ foreach (
                 $mensagemErro
             ) ?>
 
+        </div>
+
+    <?php endif; ?>
+
+
+    <?php if (!$estruturaArea27Disponivel): ?>
+
+        <div class="erro">
+            A estrutura nova da Área 27 ainda não foi instalada.
+            Execute a migração
+            <strong>database/migrations/05_indicadores_periodicos_area27.sql</strong>
+            antes de confirmar avaliações pelo novo fluxo.
         </div>
 
     <?php endif; ?>
@@ -789,6 +1009,155 @@ foreach (
 
 
     <!-- ======================================== -->
+    <!-- CÁLCULO PRELIMINAR ÁREA 27 -->
+    <!-- ======================================== -->
+
+    <div class="painel calculo-area27-painel">
+
+        <div class="calculo-area27-cabecalho">
+            <div>
+                <span class="rotulo-secao">Cálculo preliminar · Área 27</span>
+                <h2>
+                    <?= e(
+                        $calculoAutomatico['classe_final']
+                        ?? 'Pendente'
+                    ) ?>
+                </h2>
+                <p>
+                    <?php if (!empty($calculoAutomatico['fonte_determinante'])): ?>
+                        Fonte determinante:
+                        <strong><?= e($calculoAutomatico['fonte_determinante']) ?></strong>
+                    <?php else: ?>
+                        Nenhuma posição confirmada foi suficiente para classificar o artigo.
+                    <?php endif; ?>
+                </p>
+            </div>
+
+            <div class="calculo-area27-pontos">
+                <span>Pontuação projetada</span>
+                <strong>
+                    <?php if ($pontosCalculadosQuadrienio !== null): ?>
+                        <?= number_format(
+                            $pontosCalculadosQuadrienio,
+                            0,
+                            ',',
+                            '.'
+                        ) ?> pts
+                    <?php else: ?>
+                        —
+                    <?php endif; ?>
+                </strong>
+            </div>
+        </div>
+
+
+        <?php if (empty($producao['periodico_id'])): ?>
+
+            <div class="calculo-aviso">
+                Esta produção não possui periódico vinculado. O cálculo automático
+                por ABDC/ABS/JCR/SJR/SPELL/SciELO não pode ser executado.
+            </div>
+
+        <?php elseif (!$estruturaArea27Disponivel): ?>
+
+            <div class="calculo-aviso">
+                Instale a migração da Área 27 para habilitar as evidências do periódico.
+            </div>
+
+        <?php else: ?>
+
+            <div class="evidencias-area27">
+
+                <?php foreach (
+                    ['ABDC', 'ABS', 'JCR', 'SJR', 'SPELL', 'SCIELO']
+                    as $base
+                ): ?>
+
+                    <?php
+                    $evidencia =
+                        $indicadoresPeriodico[$base]
+                        ?? null;
+                    ?>
+
+                    <div class="evidencia-area27">
+                        <span class="evidencia-base">
+                            <?= $base === 'SCIELO' ? 'SciELO Brasil' : e($base) ?>
+                        </span>
+
+                        <?php if ($evidencia): ?>
+
+                            <strong>
+                                <?php if (
+                                    $base === 'SPELL'
+                                    &&
+                                    $evidencia['percentual'] !== null
+                                ): ?>
+                                    Top <?= e($evidencia['percentual']) ?>%
+                                <?php else: ?>
+                                    <?= e($evidencia['valor'] ?? '—') ?>
+                                <?php endif; ?>
+                            </strong>
+
+                            <small>
+                                <?= e($evidencia['status'] ?? 'PENDENTE') ?>
+                                <?php if (!empty($evidencia['classe_candidata'])): ?>
+                                    · candidata <?= e($evidencia['classe_candidata']) ?>
+                                <?php endif; ?>
+                            </small>
+
+                        <?php else: ?>
+
+                            <strong>—</strong>
+                            <small>Sem evidência</small>
+
+                        <?php endif; ?>
+
+                    </div>
+
+                <?php endforeach; ?>
+
+            </div>
+
+            <?php if (!empty($calculoAutomatico['ajuste_scielo'])): ?>
+                <div class="calculo-ajuste">
+                    Ajuste SciELO Brasil aplicado:
+                    <strong>
+                        <?= e($calculoAutomatico['classe_antes_ajuste']) ?>
+                        →
+                        <?= e($calculoAutomatico['classe_final']) ?>
+                    </strong>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($calculoAutomatico['pendencias'])): ?>
+                <div class="calculo-pendencias">
+                    <strong>Pendências encontradas:</strong>
+                    <ul>
+                        <?php foreach ($calculoAutomatico['pendencias'] as $pendencia): ?>
+                            <li>
+                                <?= e($pendencia['base']) ?>:
+                                <?= e($pendencia['motivo']) ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+
+            <div class="calculo-acoes">
+                <a
+                    href="../periodicos/editar.php?id=<?= (int) $producao['periodico_id'] ?>"
+                    class="botao botao-secundario"
+                >
+                    Gerenciar indicadores do periódico
+                </a>
+            </div>
+
+        <?php endif; ?>
+
+    </div>
+
+
+    <!-- ======================================== -->
     <!-- FORMULÁRIO DE AVALIAÇÃO -->
     <!-- ======================================== -->
 
@@ -823,7 +1192,7 @@ foreach (
                 <label
                     for="classificacao_id"
                 >
-                    Classificação
+                    Classificação confirmada
                 </label>
 
                 <select
@@ -889,6 +1258,11 @@ foreach (
 
                 </select>
 
+                <small class="ajuda-campo">
+                    O sistema sugere a classe calculada pelas evidências da revista.
+                    A coordenação pode confirmar outra classe, mas deve justificar a divergência.
+                </small>
+
             </div>
 
 
@@ -897,8 +1271,7 @@ foreach (
             <div class="pontuacao-box">
 
                 <span>
-                    Pontuação calculada
-                    automaticamente
+                    Pontuação oficial após confirmação
                 </span>
 
                 <strong id="pontuacao">
@@ -937,6 +1310,7 @@ foreach (
 
                 <button
                     type="submit"
+                    <?= !$estruturaArea27Disponivel ? 'disabled' : '' ?>
                 >
 
                     <?=

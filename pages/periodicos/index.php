@@ -1,6 +1,7 @@
 <?php
 
 require_once '../../config/conexao.php';
+require_once '../../includes/capes_area27.php';
 
 
 function e(
@@ -200,6 +201,81 @@ $periodicos =
     $stmt->fetchAll(
         PDO::FETCH_ASSOC
     );
+
+
+// ========================================================
+// CLASSIFICAÇÃO PRELIMINAR POR PERIÓDICO
+// ========================================================
+
+$indicadoresPorPeriodico = [];
+
+if (tabelaExisteCapes(
+    $pdo,
+    'periodicos_indicadores'
+)) {
+
+    $stmtIndicadores =
+        $pdo->query("
+            SELECT
+                id,
+                periodico_id,
+                base,
+                ano,
+                edicao,
+                categoria,
+                valor,
+                percentual,
+                classe_candidata,
+                url_evidencia,
+                status,
+                coletado_em,
+                revisado_por,
+                observacao,
+                regra_versao
+            FROM periodicos_indicadores
+            WHERE vigente = 1
+            ORDER BY periodico_id, id
+        ");
+
+    foreach (
+        $stmtIndicadores->fetchAll(
+            PDO::FETCH_ASSOC
+        )
+        as $indicador
+    ) {
+
+        $indicadoresPorPeriodico[
+            (int) $indicador['periodico_id']
+        ][
+            strtoupper(
+                (string) $indicador['base']
+            )
+        ] = $indicador;
+    }
+}
+
+
+foreach ($periodicos as &$periodico) {
+
+    $calculo =
+        calcularClassificacaoPeriodicoArea27(
+            $indicadoresPorPeriodico[
+                (int) $periodico['id']
+            ]
+            ?? []
+        );
+
+    $periodico['classe_preliminar'] =
+        $calculo['classe_final'];
+
+    $periodico['pontos_preliminares'] =
+        $calculo['pontos_padrao'];
+
+    $periodico['fonte_determinante'] =
+        $calculo['fonte_determinante'];
+}
+
+unset($periodico);
 
 ?>
 
@@ -463,6 +539,14 @@ $periodicos =
                         </th>
 
                         <th>
+                            Classe preliminar
+                        </th>
+
+                        <th>
+                            Pontos
+                        </th>
+
+                        <th>
                             Ação
                         </th>
 
@@ -477,7 +561,7 @@ $periodicos =
                         <tr>
 
                             <td
-                                colspan="6"
+                                colspan="8"
                                 class="sem-dados"
                             >
                                 Nenhum periódico encontrado
@@ -636,6 +720,45 @@ $periodicos =
                                         ?>
 
                                     </span>
+
+                                </td>
+
+                                <td>
+
+                                    <?php if (!empty($periodico['classe_preliminar'])): ?>
+
+                                        <span class="classe-capes classe-<?= strtolower(e($periodico['classe_preliminar'])) ?>">
+                                            <?= e($periodico['classe_preliminar']) ?>
+                                        </span>
+
+                                        <?php if (!empty($periodico['fonte_determinante'])): ?>
+                                            <small class="fonte-determinante">
+                                                <?= e($periodico['fonte_determinante']) ?>
+                                            </small>
+                                        <?php endif; ?>
+
+                                    <?php else: ?>
+
+                                        <span class="texto-secundario">Pendente</span>
+
+                                    <?php endif; ?>
+
+                                </td>
+
+                                <td>
+
+                                    <?php if ($periodico['pontos_preliminares'] !== null): ?>
+                                        <strong class="pontos-capes">
+                                            <?= number_format(
+                                                (float) $periodico['pontos_preliminares'],
+                                                0,
+                                                ',',
+                                                '.'
+                                            ) ?>
+                                        </strong>
+                                    <?php else: ?>
+                                        <span class="texto-secundario">—</span>
+                                    <?php endif; ?>
 
                                 </td>
 
