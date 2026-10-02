@@ -1,0 +1,189 @@
+/* =========================================
+   RELATÓRIOS
+========================================= */
+
+.relatorios-acoes-topo {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.painel-relatorio-destaque {
+    margin-bottom: 25px;
+}
+
+.form-relatorio-inicial {
+    display: flex;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.campo-filtro input {
+    min-width: 145px;
+    padding: 10px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    font-size: 14px;
+}
+
+.campo-periodo-personalizado {
+    display: none;
+}
+
+.cards-relatorios-tipos {
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+}
+
+.card-status-texto {
+    font-size: 22px;
+}
+
+.card-em-breve {
+    opacity: 0.72;
+}
+
+.botao-exportar {
+    background: #166534;
+}
+
+.painel-identificacao-relatorio,
+.painel-classificacoes-relatorio,
+.painel-producoes-relatorio,
+.nota-metodologica-relatorio {
+    margin-bottom: 25px;
+}
+
+.identificacao-relatorio {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 25px;
+}
+
+.etiqueta-relatorio {
+    display: block;
+    margin-bottom: 7px;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.identificacao-relatorio h2 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.identificacao-relatorio p {
+    margin: 8px 0 0;
+    color: #6b7280;
+}
+
+.dados-docente-relatorio {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.cards-relatorio-principal {
+    grid-template-columns: repeat(6, minmax(150px, 1fr));
+}
+
+.cards-capes-relatorio {
+    grid-template-columns: repeat(5, minmax(120px, 1fr));
+    margin-bottom: 0;
+}
+
+.graficos-relatorio {
+    margin-bottom: 25px;
+}
+
+.cabecalho-producoes-relatorio {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.acoes-exportacao-relatorio {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.coluna-titulo-relatorio {
+    min-width: 330px;
+    max-width: 520px;
+}
+
+.botao-tabela-relatorio {
+    padding: 7px 10px;
+    font-size: 12px;
+}
+
+.nota-metodologica-relatorio {
+    border-left: 4px solid #111827;
+}
+
+.nota-metodologica-relatorio strong {
+    display: block;
+    margin-bottom: 7px;
+}
+
+.nota-metodologica-relatorio p {
+    margin: 0;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+@media (max-width: 1300px) {
+    .cards-relatorio-principal {
+        grid-template-columns: repeat(3, minmax(160px, 1fr));
+    }
+}
+
+@media (max-width: 1050px) {
+    .cards-relatorios-tipos,
+    .cards-capes-relatorio {
+        grid-template-columns: repeat(2, minmax(160px, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .relatorios-acoes-topo,
+    .form-relatorio-inicial,
+    .identificacao-relatorio,
+    .cabecalho-producoes-relatorio,
+    .acoes-exportacao-relatorio {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .relatorios-acoes-topo .botao,
+    .cabecalho-producoes-relatorio .botao,
+    .acoes-exportacao-relatorio .botao {
+        width: 100%;
+        text-align: center;
+    }
+
+    .dados-docente-relatorio {
+        align-items: flex-start;
+    }
+
+    .cards-relatorio-principal,
+    .cards-relatorios-tipos,
+    .cards-capes-relatorio {
+        grid-template-columns: 1fr;
+    }
+
+    .campo-filtro input {
+        width: 100%;
+    }
+}

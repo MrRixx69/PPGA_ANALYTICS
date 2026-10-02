@@ -1,0 +1,310 @@
+.comparativos-acoes-topo {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.campo-docente-comparativo select {
+    min-width: 260px;
+}
+
+.comparativo-identidades {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.comparativo-docente-card {
+    margin: 0;
+}
+
+.comparativo-etiqueta {
+    display: block;
+    margin-bottom: 8px;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.comparativo-nome {
+    display: block;
+    min-height: 48px;
+    font-size: 21px;
+    line-height: 1.25;
+}
+
+.comparativo-resumo-card {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.comparativo-resumo-card div {
+    padding: 14px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+}
+
+.comparativo-resumo-card span {
+    display: block;
+    margin-bottom: 6px;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.comparativo-resumo-card strong {
+    font-size: 24px;
+}
+
+.comparativo-versus {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    background: #111827;
+    color: white;
+    border-radius: 50%;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.painel-comparacao,
+.painel-tipos-comparativo {
+    margin-bottom: 25px;
+}
+
+.tabela-comparativo th:not(:first-child),
+.tabela-comparativo td:not(:first-child) {
+    text-align: right;
+}
+
+.tabela-comparativo th:first-child {
+    min-width: 190px;
+}
+
+.diferenca-comparativo {
+    display: inline-flex;
+    min-width: 50px;
+    justify-content: center;
+    padding: 5px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.diferenca-positiva {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.diferenca-negativa {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.diferenca-neutra {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.grafico-tipos-comparativo {
+    height: 420px;
+}
+
+/* =========================================
+   DOCENTE × MÉDIA DO PROGRAMA
+========================================= */
+
+.media-programa-card .comparativo-nome {
+    display: flex;
+    align-items: center;
+}
+
+.cards-media-programa {
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+}
+
+.tabela-media-programa th:nth-child(2),
+.tabela-media-programa td:nth-child(2) {
+    font-weight: bold;
+}
+
+.tabela-media-programa th:nth-child(3),
+.tabela-media-programa td:nth-child(3) {
+    background: #f9fafb;
+}
+
+@media (max-width: 1100px) {
+    .cards-media-programa {
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .comparativo-identidades {
+        grid-template-columns: 1fr;
+    }
+
+    .comparativo-versus {
+        margin: 0 auto;
+    }
+
+    .campo-docente-comparativo select {
+        min-width: 190px;
+    }
+}
+
+@media (max-width: 650px) {
+    .comparativo-resumo-card,
+    .cards-media-programa {
+        grid-template-columns: 1fr;
+    }
+
+    .comparativos-acoes-topo {
+        width: 100%;
+    }
+
+    .comparativos-acoes-topo .botao {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* =========================================
+   ANO × ANO
+========================================= */
+
+.campo-ano-comparativo select {
+    min-width: 180px;
+}
+
+.comparativo-ano-numero {
+    font-size: 30px;
+}
+
+.cards-ano-comparativo {
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+}
+
+.tabela-ano-comparativo th:nth-child(2),
+.tabela-ano-comparativo td:nth-child(2),
+.tabela-ano-comparativo th:nth-child(3),
+.tabela-ano-comparativo td:nth-child(3) {
+    font-weight: bold;
+}
+
+@media (max-width: 1100px) {
+    .cards-ano-comparativo {
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .cards-ano-comparativo {
+        grid-template-columns: 1fr;
+    }
+
+    .campo-ano-comparativo select {
+        min-width: 140px;
+    }
+}
+
+/* =========================================
+   QUADRIÊNIO × QUADRIÊNIO
+========================================= */
+
+.campo-quadrienio-comparativo select {
+    min-width: 245px;
+}
+
+.comparativo-quadrienio-numero {
+    font-size: 28px;
+}
+
+.status-quadrienio {
+    display: inline-flex;
+    width: fit-content;
+    margin-top: 8px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-capes-ok {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-capes-pendente {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.aviso-comparativo {
+    margin-bottom: 25px;
+}
+
+.aviso-comparativo strong {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 16px;
+}
+
+.aviso-comparativo p {
+    margin: 0;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.aviso-comparativo-atencao {
+    border-left: 4px solid #d97706;
+}
+
+.valor-indisponivel {
+    color: #9ca3af;
+}
+
+@media (max-width: 650px) {
+    .campo-quadrienio-comparativo select {
+        min-width: 170px;
+    }
+}
+
+
+/* =========================================
+   LINHA × LINHA
+========================================= */
+
+.campo-linha-comparativo select {
+    min-width: 260px;
+}
+
+.comparativo-linha-nome {
+    font-size: 21px;
+}
+
+.aviso-vinculos-linha {
+    margin-bottom: 25px;
+    border-left: 4px solid #2563eb;
+}
+
+.aviso-vinculos-linha p {
+    margin: 0;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+@media (max-width: 650px) {
+    .campo-linha-comparativo select {
+        min-width: 170px;
+    }
+}

@@ -1,0 +1,19 @@
+﻿.env
+config/conexao.php
+uploads/
+*.sql
+*.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Windows/macOS
+Thumbs.db
+.DS_Store
